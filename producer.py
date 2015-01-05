@@ -19,9 +19,12 @@ JOB_BACKEND_CONF = {
 
 def main():
     count = 1
-    with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) as persistence:
+    with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
+            as persistence:
 
-        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(), persistence=persistence) as board:
+        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(),
+                                  persistence=persistence) \
+                as board:
 
             while True:
                 print "test loop %d" % (count)

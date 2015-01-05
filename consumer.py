@@ -54,17 +54,22 @@ class PrintVmStatus(task.Task):
 def main():
     vm_flow = linear_flow.Flow('creating vm').add(
         CreateVm(),
-        linear_flow.Flow('check vm status', retry=retry.Times(attempts=5)).add(CheckVmStatus()),
+        linear_flow.Flow('check vm status',
+                         retry=retry.Times(attempts=5)).add(CheckVmStatus()),
         PrintVmStatus(),
     )
 
     consumer_name = "Consumer"
-    with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) as persistence:
+    with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
+            as persistence:
 
-        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(), persistence=persistence) as board:
+        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(),
+                                  persistence=persistence) \
+                as board:
 
             while True:
-                for job in board.iterjobs(ensure_fresh=True, only_unclaimed=True):
+                for job in board.iterjobs(ensure_fresh=True,
+                                          only_unclaimed=True):
                     print ("%s attempting to claim" % (job))
                     try:
                         board.claim(job, consumer_name)
