@@ -15,7 +15,8 @@ import sys
 import random
 
 PERSISTENCE_BACKEND_CONF = {
-    "connection": "mysql+pymysql://taskflow:taskflow@localhost/taskflow",
+    #"connection": "mysql+pymysql://taskflow:taskflow@localhost/taskflow",
+    "connection": "zookeeper",
 }
 
 JOB_BACKEND_CONF = {
@@ -55,7 +56,7 @@ def main():
     vm_flow = linear_flow.Flow('creating vm').add(
         CreateVm(),
         linear_flow.Flow('check vm status',
-                         retry=retry.Times(attempts=5)).add(CheckVmStatus()),
+                         retry=retry.Times(attempts=5)).add(CheckVmStatus(provides='vm_status')),
         PrintVmStatus(),
     )
 
@@ -77,12 +78,17 @@ def main():
                         print "%s claim unsuccessful" % (job)
                     else:
                         try:
-                            engines.run(vm_flow, store=job.details)
-                            board.consume(job, consumer_name)
+                            engines.run(vm_flow, store=job.details['store'])
                         except Exception as e:
                             board.abandon(job, consumer_name)
                             print "%s abandoned" % (job)
                             print e
+                        else:
+                            board.consume(job, consumer_name)
+                            persistence.get_connection().destroy_logbook(
+                                job.book.uuid
+                            )
+
                 print "No jobs, sleeping"
                 sleep(1)
 

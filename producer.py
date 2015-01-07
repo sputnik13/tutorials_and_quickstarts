@@ -4,12 +4,14 @@ __author__ = 'sputnik13'
 
 from taskflow.jobs import backends as job_backends
 from taskflow.persistence import backends as persistence_backends
+from taskflow.persistence import logbook
 
 from time import sleep
 import sys
 
 PERSISTENCE_BACKEND_CONF = {
-    "connection": "mysql+pymysql://taskflow:taskflow@localhost/taskflow",
+    #"connection": "mysql+pymysql://taskflow:taskflow@localhost/taskflow",
+    "connection": "zookeeper",
 }
 
 JOB_BACKEND_CONF = {
@@ -29,11 +31,15 @@ def main():
             while True:
                 print "test loop %d" % (count)
                 job_name = "Job #%d" % (count)
+                book = logbook.LogBook(job_name)
                 details = {
-                    'vm_id': count,
-                    'vm_name': "VM(%d)" % (count),
+                    'store': {
+                        'vm_id': count,
+                        'vm_name': "VM(%d)" % (count),
+                    }
                 }
-                job = board.post(job_name, book=None, details=details)
+                persistence.get_connection().save_logbook(book)
+                job = board.post(job_name, book=book, details=details)
                 print "%s posted" % (job)
                 sleep(1)
                 count += 1
