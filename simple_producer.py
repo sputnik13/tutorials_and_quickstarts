@@ -24,22 +24,22 @@ def main():
     with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
             as persistence:
 
-        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(),
+        with job_backends.backend('tutorial_simple', JOB_BACKEND_CONF.copy(),
                                   persistence=persistence) \
                 as board:
 
             while True:
                 print "test loop %d" % (count)
                 job_name = "Job #%d" % (count)
-                book = logbook.LogBook(job_name)
+                job_logbook = logbook.LogBook(job_name)
+                persistence.get_connection().save_logbook(job_logbook)
                 details = {
                     'store': {
                         'vm_id': count,
                         'vm_name': "VM(%d)" % (count),
                     }
                 }
-                persistence.get_connection().save_logbook(book)
-                job = board.post(job_name, book=book, details=details)
+                job = board.post(job_name, book=job_logbook, details=details)
                 print "%s posted" % (job)
                 sleep(1)
                 count += 1

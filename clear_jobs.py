@@ -10,23 +10,29 @@ from time import sleep
 import sys
 
 PERSISTENCE_BACKEND_CONF = {
-    "connection": "mysql+pymysql://taskflow:taskflow@localhost/taskflow",
-    }
+    #"connection": "mysql+pymysql://taskflow:taskflow@localhost/taskflow",
+    "connection": "zookeeper"
+}
 
 JOB_BACKEND_CONF = {
     "board": "zookeeper",
-    }
+}
+
 
 def main():
     consumer_name = "CLEAR"
 
-    with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) as persistence:
+    with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
+            as persistence:
 
-        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(), persistence=persistence) as board:
+        with job_backends.backend('my-board',
+                                  JOB_BACKEND_CONF.copy(),
+                                  persistence=persistence) \
+                as board:
 
             while True:
-                job_count = 0;
-                for job in board.iterjobs(ensure_fresh=True, only_unclaimed=True):
+                job_count = 0
+                for job in board.iterjobs(ensure_fresh=True):
                     try:
                         board.claim(job, consumer_name)
                     except (excp.NotFound, excp.UnclaimableJob):
@@ -34,6 +40,9 @@ def main():
                     else:
                         try:
                             board.consume(job, consumer_name)
+                            persistence.get_connection().destroy_logbook(
+                                job.book.uuid
+                            )
                         except Exception as e:
                             board.abandon(job, consumer_name)
                             print "%s abandoned" % (job)

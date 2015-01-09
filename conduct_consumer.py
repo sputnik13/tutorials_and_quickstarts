@@ -3,10 +3,6 @@
 __author__ = 'sputnik13'
 
 import sys
-import logging
-
-#logging.basicConfig(level=logging.DEBUG)
-
 from taskflow.jobs import backends as job_backends
 from taskflow.persistence import backends as persistence_backends
 from taskflow.conductors import single_threaded
@@ -25,7 +21,7 @@ def main():
     with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
             as persistence:
 
-        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(),
+        with job_backends.backend('tutorial_conduct', JOB_BACKEND_CONF.copy(),
                                   persistence=persistence) \
                 as board:
 

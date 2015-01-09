@@ -28,7 +28,7 @@ def main():
     with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
             as persistence:
 
-        with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(),
+        with job_backends.backend('tutorial_conduct', JOB_BACKEND_CONF.copy(),
                                   persistence=persistence) \
                 as board:
 
@@ -50,7 +50,9 @@ def main():
                         'vm_name': "VM(%d)" % (count),
                     }
                 }
-                job = board.post(job_name, book=job_logbook, details=job_details)
+                job = board.post(job_name,
+                                 book=job_logbook,
+                                 details=job_details)
                 print "%s posted" % (job)
                 sleep(1)
                 count += 1

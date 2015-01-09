@@ -3,3 +3,5 @@ taskflow
 SQLAlchemy
 PyMySQL
 alembic
+python-keystoneclient
+python-novaclient
