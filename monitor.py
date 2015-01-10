@@ -22,15 +22,23 @@ def main():
     with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
             as persistence:
 
-        with job_backends.backend('my-board',
-                                  JOB_BACKEND_CONF.copy(),
+        with job_backends.backend('tutorial_simple',
+                                  {"board": "zookeeper",
+                                   "path": "/taskflow/jobs/tutorial_simple"},
                                   persistence=persistence) \
-                as board:
+                as board_simple:
 
-            while True:
-                job_count = board.job_count
-                print "%d outstanding jobs" % (job_count)
-                sleep(1)
+            with job_backends.backend('tutorial_conduct',
+                                      {"board": "zookeeper",
+                                       "path": "/taskflow/jobs/tutorial_conduct"},
+                                      persistence=persistence) \
+                    as board_conduct:
+
+                while True:
+                    job_count = board_simple.job_count
+                    job_count += board_conduct.job_count
+                    print "%d outstanding jobs" % (job_count)
+                    sleep(1)
 
 
 if __name__ == "__main__":

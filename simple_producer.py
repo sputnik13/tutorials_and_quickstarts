@@ -16,6 +16,7 @@ PERSISTENCE_BACKEND_CONF = {
 
 JOB_BACKEND_CONF = {
     "board": "zookeeper",
+    "path": "/taskflow/jobs/tutorial_simple",
 }
 
 
