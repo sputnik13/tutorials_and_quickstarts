@@ -322,3 +322,38 @@ Using a Conductor requires a change in behavior from the Job Producer.  Whereas 
 			}
 			job = board.post("job name", book=job_logbook, details=job_details)
 
+
+Here the key difference is the explicit creation of a FlowDetail by the Producer, which is then populated with "factory_details" using *[engines.save_factory_details(...)](http://docs.openstack.org/developer/taskflow/engines.html#taskflow.engines.helpers.save_factory_details)*.  This method takes the flow_detail to be populated, a flow factory function, a tuple of arguments for the factory function, and a dictionary of kwargs for the factory function.
+
+
+**Consumer**
+
+	import sys
+	from taskflow.jobs import backends as job_backends
+	from taskflow.persistence import backends as persistence_backends
+	from taskflow.conductors import single_threaded
+	
+	PERSISTENCE_BACKEND_CONF = {
+		"connection": "zookeeper",
+	}
+	
+	JOB_BACKEND_CONF = {
+		"board": "zookeeper",
+	}
+	
+	
+	def main():
+		with persistence_backends.backend(PERSISTENCE_BACKEND_CONF.copy()) \
+				as persistence:
+	
+			with job_backends.backend('my-board', JOB_BACKEND_CONF.copy(),
+									  persistence=persistence) \
+					as board:
+	
+				conductor = single_threaded.SingleThreadedConductor(
+					"conductor name", board, persistence, engine='serial')
+	
+				conductor.run()
+
+
+The above Conductor based Consumer is capable of running any Jobs that are posted to the Jobboard it is connected to.  The caveat is that the Task and Flow code need to be in the Consumer's PYTHONPATH as TaskFlow uses information provided in the Job's FlowDetail to load the code for requisite Flows and Tasks.
