@@ -29,7 +29,7 @@ A Flow is created in a declarative manner and starts with definition of a Task.
 			print param2
 
 
-Each Task is defined as a sub-class of *taskflow.task.Task* and must implement an *execute* method.  A Task requiring input parameters can specify the parameters by name in the *execute* method.  Although the examples above use a single parameter in each Task, multiple parameters can be specified as necessary.
+Each Task is defined as a sub-class of *[taskflow.task.Task](http://docs.openstack.org/developer/taskflow/atoms.html#module-taskflow.task)* and must implement an *[execute](http://docs.openstack.org/developer/taskflow/atoms.html#taskflow.task.BaseTask.execute)* method.  A Task requiring input parameters can specify the parameters by name in the *execute* method.  Although the examples above use a single parameter in each Task, multiple parameters can be specified as necessary.
 
 Once Tasks have been defined, they can be composed in to a Flow.
 
@@ -50,7 +50,7 @@ The example flow above executes two tasks in a linear pattern.  TaskFlow allows 
 
 Job, Jobboard, and Job Producer
 -------
-A Jobboard is a combination of a Job backend and a Persistence backend.  A Jobboard is both created and retrieved from a supported backend with the same function *taskflow.jobs.backends.backend(...)*.
+A Jobboard is a combination of a Job backend and a Persistence backend.  A Jobboard is both created and retrieved from a supported backend with the same function *[taskflow.jobs.backends.backend(...)](http://docs.openstack.org/developer/taskflow/jobs.html#taskflow.jobs.backends.backend)*.
 
 	from taskflow.jobs import backends as job_backends
 	from taskflow.persistence import backends as persistence_backends
@@ -172,12 +172,12 @@ Providing Input Data to Tasks
 -------
 Tasks can [optionally] take input parameters as part of the execute method.  These parameters are provided in one of two ways.
 
- - Providing a 'store' argument to the Engine
+ - Providing a 'store' argument to the Engine via either *[engines.load(...)](http://docs.openstack.org/developer/taskflow/engines.html#taskflow.engines.helpers.load)* or *[engines.run(...)](http://docs.openstack.org/developer/taskflow/engines.html#taskflow.engines.helpers.run)*
  - Binding return values from other Tasks to a name
 
-The 'store' argument in the Engine (whether via the *engines.run* or the *engines.load* method) takes a dictionary whose keys correspond to input parameter names.  The dictionary values are available to all sub-Flows and Tasks that make up the Flow being run.  In the Job Producer/Consumer example above, the Job Producer provides the 'store' dictionary as part of the Job's *job_detail* attribute.  The Job Consumer then uses the 'store' dictionary as input to the *engines.load(...)* or *engines.run(...)* method.
+The 'store' argument in the Engine takes a dictionary whose keys correspond to input parameter names.  The dictionary values are available to all sub-Flows and Tasks that make up the Flow being run.  In the Job Producer/Consumer example above, the Job Producer provides the 'store' dictionary as part of the Job's *job_detail* attribute.  The Job Consumer then uses the 'store' dictionary as input to the *engines.load(...)* or *engines.run(...)* method.
 
-It's also possible to bind return values from Tasks to names.  These names are mapped to parameter names in a Task's execute method.  The mapping is done using either the *default_provides* member variable in a Task, or by specifying a value in the *provides* argument.
+It's also possible to bind return values from Tasks to names.  These names are mapped to parameter names in a Task's execute method.  The mapping is done using either the *default_provides* member variable in a Task, or by specifying a value in the *[provides](http://docs.openstack.org/developer/taskflow/atoms.html#taskflow.atom.Atom.provides)* argument.
 
 	from taskflow import task
 	from taskflow.patterns import linear_flow
@@ -357,3 +357,4 @@ Here the key difference is the explicit creation of a FlowDetail by the Producer
 
 
 The above Conductor based Consumer is capable of running any Jobs that are posted to the Jobboard it is connected to.  The caveat is that the Task and Flow code need to be in the Consumer's PYTHONPATH as TaskFlow uses information provided in the Job's FlowDetail to load the code for requisite Flows and Tasks.
+
