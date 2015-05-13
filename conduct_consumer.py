@@ -2,7 +2,9 @@
 
 __author__ = 'sputnik13'
 
+import signal
 import sys
+
 from taskflow.jobs import backends as job_backends
 from taskflow.persistence import backends as persistence_backends
 from taskflow.conductors import single_threaded
@@ -29,6 +31,8 @@ def main():
             conductor = single_threaded.SingleThreadedConductor(
                 "conductor name", board, persistence, engine='serial')
 
+            sighandler = lambda signum, frame: conductor.stop()
+            signal.signal(signal.SIGINT, sighandler)
             conductor.run()
 
 
