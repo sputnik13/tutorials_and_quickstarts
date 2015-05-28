@@ -3,7 +3,7 @@
 
 See https://wiki.openstack.org/wiki/TaskFlow and http://docs.openstack.org/developer/taskflow/ for official documentation.
 
-See [tutorial.md](https://github.com/sputnik13/taskflow_tutorial/blob/master/tutorial.md) for a high level walkthrough of TaskFlow.
+See [tutorial.md](https://github.com/sputnik13/taskflow_tutorial/blob/master/taskflow/tutorial.md) for a high level walkthrough of TaskFlow.
 
 
 Running example(s)
