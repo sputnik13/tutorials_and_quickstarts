@@ -1,0 +1,11 @@
+# playbook_multi.yaml
+---
+- hosts: all
+  vars:
+      STATE1: stopped
+  tasks:
+      - include: playbook_tasks.yaml
+        STATE: "{{STATE1}}"
+
+  handlers:
+      - include: playbook_handlers.yaml STATE=restarted

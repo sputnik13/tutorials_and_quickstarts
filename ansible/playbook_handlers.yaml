@@ -1,0 +1,4 @@
+# playbook_handlers.yaml
+---
+- name: restart ntp
+  service: name=ntp state={{STATE}}

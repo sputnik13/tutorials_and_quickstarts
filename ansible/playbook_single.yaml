@@ -1,0 +1,20 @@
+---
+- hosts: all
+  tasks:
+    - name: ensure ntpd is at the latest version
+      apt: name=ntp state=latest
+      register: ntpinstalled
+      notify:
+      - restart ntp
+
+    - name: start ntp
+      when: ntpinstalled|success
+      service: name=ntp state=started
+
+    - name: stop ntp
+      when: ntpinstalled|failed
+      service: name=ntp state=stopped
+
+  handlers:
+    - name: restart ntp
+      service: name=ntp state=restarted
