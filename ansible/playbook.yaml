@@ -1,0 +1,11 @@
+# playbook_multi.yaml
+---
+- hosts: all
+  vars:
+      ntp_server: us.pool.ntp.org
+  tasks:
+      - include: tasks.yaml
+        STATE: started
+
+  handlers:
+      - include: handlers.yaml STATE=restarted
